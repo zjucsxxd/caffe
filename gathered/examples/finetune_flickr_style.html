@@ -51,14 +51,14 @@ Let’s fine-tune the BVLC-distributed CaffeNet model on a different dataset, <a
 
 <h2 id="explanation">Explanation</h2>
 
-<p>The Flickr-sourced images of the Style dataset are visually very similar to the ImageNet dataset, on which the <code>caffe_reference_imagenet_model</code> was trained.
+<p>The Flickr-sourced images of the Style dataset are visually very similar to the ImageNet dataset, on which the <code>bvlc_reference_caffenet</code> was trained.
 Since that model works well for object category classification, we’d like to use it architecture for our style classifier.
 We also only have 80,000 images to train on, so we’d like to start with the parameters learned on the 1,000,000 ImageNet images, and fine-tune as needed.
 If we give provide the <code>weights</code> argument to the <code>caffe train</code> command, the pretrained weights will be loaded into our model, matching layers by name.</p>
 
 <p>Because we are predicting 20 classes instead of a 1,000, we do need to change the last layer in the model.
 Therefore, we change the name of the last layer from <code>fc8</code> to <code>fc8_flickr</code> in our prototxt.
-Since there is no layer named that in the <code>caffe_reference_imagenet_model</code>, that layer will begin training with random weights.</p>
+Since there is no layer named that in the <code>bvlc_reference_caffenet</code>, that layer will begin training with random weights.</p>
 
 <p>We will also decrease the overall learning rate <code>base_lr</code> in the solver prototxt, but boost the <code>blobs_lr</code> on the newly introduced layer.
 The idea is to have the rest of the model change very slowly with new data, but let the new layer learn fast.
@@ -92,7 +92,6 @@ Writing train/val for 1939 successfully downloaded images.
 </code></pre>
 
 <p>This script downloads images and writes train/val file lists into <code>data/flickr_style</code>.
-With this random seed there are 1,557 train images and 382 test images.
 The prototxts in this example assume this, and also assume the presence of the ImageNet mean file (run <code>get_ilsvrc_aux.sh</code> from <code>data/ilsvrc12</code> to obtain this if you haven’t yet).</p>
 
 <p>We’ll also need the ImageNet-trained model, which you can obtain by running <code>./scripts/download_model_binary.py models/bvlc_reference_caffenet</code>.</p>
@@ -146,7 +145,8 @@ I0828 22:23:17.438894 11510 solver.cpp:302]     Test net output #0: accuracy = 0
 </code></pre>
 
 <p>Note how rapidly the loss went down. Although the 23.5% accuracy is only modest, it was achieved in only 1000, and evidence that the model is starting to learn quickly and well.
-Once the model is fully fine-tuned on the whole training set over 100,000 iterations the final validation accuracy is 91.64%. This takes ~7 hours in Caffe on a K40 GPU.</p>
+Once the model is fully fine-tuned on the whole training set over 100,000 iterations the final validation accuracy is 39.16%.
+This takes ~7 hours in Caffe on a K40 GPU.</p>
 
 <p>For comparison, here is how the loss goes down when we do not start with a pre-trained model:</p>
 
@@ -196,7 +196,7 @@ Furthermore, note that the model has only trained on &lt; 2,000 instances. Trans
 
 <h2 id="trained-model">Trained model</h2>
 
-<p>We provide a model trained on all 80K images, with final accuracy of 98%.
+<p>We provide a model trained on all 80K images, with final accuracy of 39%.
 Simply do <code>./scripts/download_model_binary.py models/finetune_flickr_style</code> to obtain it.</p>
 
 <h2 id="license">License</h2>
